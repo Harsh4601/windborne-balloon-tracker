@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WindBorne Balloon Constellation Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌐 WindBorne Balloon Constellation Tracker</h1>
+            <p class="subtitle">Real-time tracking of 1000 weather balloons with weather data integration</p>
+        </header>
+
+        <div class="controls">
+            <div class="time-control">
+                <label for="timeSlider">Time: <span id="timeDisplay">Current (00:00)</span></label>
+                <input type="range" id="timeSlider" min="0" max="23" value="0" step="1">
+                <button id="playPause" class="play-btn">▶ Play</button>
+                <button id="resetBtn" class="reset-btn">Reset</button>
+            </div>
+            <div class="view-controls">
+                <label>
+                    <input type="checkbox" id="showTrajectories" checked>
+                    Show Trajectories
+                </label>
+                <label>
+                    <input type="checkbox" id="showWeather" checked>
+                    Show Weather Data
+                </label>
+                <label>
+                    <input type="checkbox" id="showHeatmap">
+                    Show Density Heatmap
+                </label>
+            </div>
+        </div>
+
+        <div id="stats" class="stats">
+            <div class="stat-item">
+                <span class="stat-label">Active Balloons:</span>
+                <span class="stat-value" id="balloonCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Avg Altitude:</span>
+                <span class="stat-value" id="avgAltitude">0 km</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Coverage Area:</span>
+                <span class="stat-value" id="coverageArea">0 km²</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Status:</span>
+                <span class="stat-value" id="status">Loading...</span>
+            </div>
+        </div>
+
+        <div id="map" class="map-container"></div>
+
+        <div class="info-panel">
+            <h3>About This Visualization</h3>
+            <p>
+                This interactive map displays the positions of WindBorne Systems' constellation of 1000 weather balloons 
+                over the past 24 hours. Each balloon's trajectory is shown, and weather conditions at their locations 
+                are integrated using the OpenWeatherMap API.
+            </p>
+            <p>
+                <strong>External API Used:</strong> OpenWeatherMap API - I chose this because weather balloons are 
+                designed to collect atmospheric data, and combining their positions with real-time weather conditions 
+                allows us to visualize the relationship between balloon locations and weather patterns, demonstrating 
+                how this constellation provides comprehensive global weather coverage.
+            </p>
+            <div class="features">
+                <h4>Features:</h4>
+                <ul>
+                    <li>📊 Real-time position tracking for all 1000 balloons</li>
+                    <li>🌦️ Weather data overlay at balloon locations</li>
+                    <li>📈 Trajectory visualization showing 24-hour movement</li>
+                    <li>🗺️ Interactive time slider to explore historical positions</li>
+                    <li>🔥 Density heatmap showing balloon concentration</li>
+                    <li>📱 Responsive design for all devices</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" onerror="console.warn('Heatmap plugin failed to load')"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
