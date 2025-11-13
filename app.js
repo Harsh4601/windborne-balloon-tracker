@@ -52,21 +52,41 @@ class BalloonTracker {
     }
     
     async fetchHourData(hour) {
-        // Use CORS proxy to bypass CORS restrictions when deployed
         const apiUrl = `https://a.windbornesystems.com/treasure/${String(hour).padStart(2, '0')}.json`;
-        // Use allorigins.win as CORS proxy (free, no API key needed)
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
+        
+        // Try direct fetch first (works on localhost)
+        // If that fails, use CORS proxy for deployed version
+        let response, data;
         
         try {
-            const response = await fetch(proxyUrl);
-            if (!response.ok) {
+            // Try direct fetch first
+            response = await fetch(apiUrl, { mode: 'cors' });
+            if (response.ok) {
+                data = await response.json();
+            } else {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
-            const proxyData = await response.json();
-            // The proxy wraps the response in a 'contents' field
-            const data = JSON.parse(proxyData.contents);
-            
+        } catch (error) {
+            // If direct fetch fails, use CORS proxy
+            try {
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
+                response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                data = await response.json();
+            } catch (proxyError) {
+                // Try alternative proxy
+                const altProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+                response = await fetch(altProxyUrl);
+                if (!response.ok) {
+                    throw proxyError;
+                }
+                data = await response.json();
+            }
+        }
+        
+        try {
             // Robustly parse the data - handle corrupted or unexpected formats
             if (!Array.isArray(data)) {
                 console.warn(`Hour ${hour}: Data is not an array, skipping`);
@@ -85,10 +105,9 @@ class BalloonTracker {
             });
             
             this.balloonData[hour] = validData;
-            
         } catch (error) {
-            console.warn(`Error fetching hour ${hour}:`, error);
-            // Use empty array if fetch fails
+            console.warn(`Error parsing hour ${hour}:`, error);
+            // Use empty array if parsing fails
             this.balloonData[hour] = [];
         }
     }
