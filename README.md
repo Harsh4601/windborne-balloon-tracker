@@ -84,45 +84,9 @@ Works in all modern browsers:
 - Safari (latest)
 - Mobile browsers
 
-## Submitting Your Application
+## Live Demo
 
-Once you have:
-1. ✅ Deployed this app to a publicly accessible URL
-2. ✅ Prepared your portfolio URL (a project you're proud of)
-3. ✅ Uploaded your resume to a publicly accessible URL
-
-You can submit your application using one of the provided scripts:
-
-### Using Node.js:
-```bash
-# Edit submit-application.js and fill in your information
-node submit-application.js
-```
-
-### Using Python:
-```bash
-# Edit submit-application.py and fill in your information
-python3 submit-application.py
-```
-
-### Or use curl directly:
-```bash
-curl -X POST https://windbornesystems.com/career_applications.json \
-  -H "Content-Type: application/json" \
-  -d '{
-    "career_application": {
-      "name": "Your Name",
-      "email": "your.email@example.com",
-      "role": "Junior Web Developer",
-      "notes": "Your specialization + collaboration + API explanation",
-      "submission_url": "https://your-deployed-app.com",
-      "portfolio_url": "https://your-portfolio-project.com",
-      "resume_url": "https://your-resume.pdf"
-    }
-  }'
-```
-
-**Important**: Make sure the response status code is 200! Any other status means it wasn't accepted.
+🌐 **View the live application**: [https://harsh4601.github.io/windborne-balloon-tracker/](https://harsh4601.github.io/windborne-balloon-tracker/)
 
 ## License
 
