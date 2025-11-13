@@ -52,15 +52,20 @@ class BalloonTracker {
     }
     
     async fetchHourData(hour) {
-        const url = `https://a.windbornesystems.com/treasure/${String(hour).padStart(2, '0')}.json`;
+        // Use CORS proxy to bypass CORS restrictions when deployed
+        const apiUrl = `https://a.windbornesystems.com/treasure/${String(hour).padStart(2, '0')}.json`;
+        // Use allorigins.win as CORS proxy (free, no API key needed)
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
         
         try {
-            const response = await fetch(url);
+            const response = await fetch(proxyUrl);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            const data = await response.json();
+            const proxyData = await response.json();
+            // The proxy wraps the response in a 'contents' field
+            const data = JSON.parse(proxyData.contents);
             
             // Robustly parse the data - handle corrupted or unexpected formats
             if (!Array.isArray(data)) {
