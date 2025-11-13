@@ -31,23 +31,43 @@ class BalloonTracker {
     
     async loadAllData() {
         const statusEl = document.getElementById('status');
+        const startTime = Date.now();
+        let loadedCount = 0;
+        
         statusEl.textContent = 'Loading balloon data...';
         statusEl.className = 'stat-value';
+        statusEl.style.color = '#667eea';
+        
+        // Create progress tracking
+        const updateProgress = () => {
+            loadedCount++;
+            const progress = Math.round((loadedCount / 24) * 100);
+            statusEl.textContent = `Loading... ${loadedCount}/24 hours (${progress}%)`;
+        };
         
         const promises = [];
         for (let hour = 0; hour < 24; hour++) {
-            promises.push(this.fetchHourData(hour));
+            promises.push(
+                this.fetchHourData(hour).then(() => {
+                    updateProgress();
+                })
+            );
         }
         
         try {
             await Promise.all(promises);
             this.processTrajectories();
-            statusEl.textContent = 'Ready';
+            
+            const loadTime = ((Date.now() - startTime) / 1000).toFixed(1);
+            const totalBalloons = Object.values(this.balloonData).reduce((sum, data) => sum + data.length, 0);
+            
+            statusEl.textContent = `Ready • ${totalBalloons} balloons loaded in ${loadTime}s`;
             statusEl.style.color = '#28a745';
         } catch (error) {
             console.error('Error loading data:', error);
-            statusEl.textContent = 'Error loading data';
-            statusEl.style.color = '#dc3545';
+            const loadedHours = Object.keys(this.balloonData).length;
+            statusEl.textContent = `Partial load: ${loadedHours}/24 hours available`;
+            statusEl.style.color = '#ff8800';
         }
     }
     
@@ -205,12 +225,16 @@ class BalloonTracker {
         const hour = this.currentHour;
         const data = this.balloonData[hour] || [];
         
-        // Update stats
-        document.getElementById('balloonCount').textContent = data.length;
+        // Update stats with smooth transitions
+        const balloonCountEl = document.getElementById('balloonCount');
+        const avgAltEl = document.getElementById('avgAltitude');
+        const coverageEl = document.getElementById('coverageArea');
+        
+        balloonCountEl.textContent = data.length.toLocaleString();
         
         if (data.length > 0) {
             const avgAlt = data.reduce((sum, b) => sum + b[2], 0) / data.length;
-            document.getElementById('avgAltitude').textContent = `${avgAlt.toFixed(2)} km`;
+            avgAltEl.textContent = `${avgAlt.toFixed(2)} km`;
             
             // Calculate approximate coverage area (simplified)
             const lats = data.map(b => b[0]);
@@ -219,7 +243,10 @@ class BalloonTracker {
             const lonRange = Math.max(...lons) - Math.min(...lons);
             // Rough area calculation (not exact due to spherical geometry)
             const area = latRange * lonRange * 111 * 111; // km² approximation
-            document.getElementById('coverageArea').textContent = `${area.toFixed(0)} km²`;
+            coverageEl.textContent = `${area.toLocaleString()} km²`;
+        } else {
+            avgAltEl.textContent = '0 km';
+            coverageEl.textContent = '0 km²';
         }
         
         // Update time display
