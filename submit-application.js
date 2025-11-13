@@ -17,13 +17,13 @@ const https = require('https');
 
 const APPLICATION_DATA = {
     career_application: {
-        name: "YOUR_NAME", // Replace with your name
-        email: "YOUR_EMAIL", // Replace with your email
+        name: "Harsh Vivek Londhekar",
+        email: "harsh.londhekar@stonybrook.edu",
         role: "Junior Web Developer",
         notes: "I specialize in building interactive web applications with modern JavaScript. I'm passionate about creating data visualizations that make complex information accessible and engaging. I work well in collaborative environments and enjoy solving challenging problems. I chose to integrate OpenWeatherMap API because weather balloons are designed to collect atmospheric data, and combining their positions with real-time weather conditions allows us to visualize the relationship between balloon locations and weather patterns, demonstrating how this constellation provides comprehensive global weather coverage.",
-        submission_url: "YOUR_SUBMISSION_URL", // Replace with your deployed app URL (e.g., https://your-app.netlify.app)
-        portfolio_url: "YOUR_PORTFOLIO_URL", // Replace with a project you're proud of
-        resume_url: "YOUR_RESUME_URL" // Replace with your resume URL (PDF hosted somewhere)
+        submission_url: "https://harsh4601.github.io/windborne-balloon-tracker/", // Will be updated after deployment
+        portfolio_url: "https://harsh4601.github.io/",
+        resume_url: "YOUR_RESUME_URL" // Need direct PDF link - see RESUME_LINK_INSTRUCTIONS.md
     }
 };
 
