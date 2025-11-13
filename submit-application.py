@@ -26,7 +26,7 @@ APPLICATION_DATA = {
         "notes": "I specialize in building interactive web applications with modern JavaScript. I'm passionate about creating data visualizations that make complex information accessible and engaging. I work well in collaborative environments and enjoy solving challenging problems. I chose to integrate OpenWeatherMap API because weather balloons are designed to collect atmospheric data, and combining their positions with real-time weather conditions allows us to visualize the relationship between balloon locations and weather patterns, demonstrating how this constellation provides comprehensive global weather coverage.",
         "submission_url": "https://harsh4601.github.io/windborne-balloon-tracker/",  # Will be updated after deployment
         "portfolio_url": "https://harsh4601.github.io/",
-        "resume_url": "YOUR_RESUME_URL"  # Need direct PDF link - see instructions below
+        "resume_url": "https://drive.google.com/uc?export=download&id=114uC2GT73zQuzP1kSr0U19--TDIjpoW-"
     }
 }
 
