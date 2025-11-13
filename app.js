@@ -9,9 +9,12 @@ class BalloonTracker {
         this.currentHour = 0;
         this.isPlaying = false;
         this.playInterval = null;
+        this.animationSpeed = 1000; // milliseconds between frames
         this.markers = [];
         this.trajectoryLayers = [];
         this.heatmapLayer = null;
+        this.minAltitude = 0;
+        this.darkMode = false;
         
         // Initialize map
         this.map = L.map('map').setView([20, 0], 2);
@@ -223,7 +226,10 @@ class BalloonTracker {
     
     updateDisplay() {
         const hour = this.currentHour;
-        const data = this.balloonData[hour] || [];
+        let data = this.balloonData[hour] || [];
+        
+        // Filter by altitude
+        data = data.filter(([lat, lon, alt]) => alt >= this.minAltitude);
         
         // Update stats with smooth transitions
         const balloonCountEl = document.getElementById('balloonCount');
@@ -285,11 +291,14 @@ class BalloonTracker {
     async renderBalloons(data) {
         const showWeather = document.getElementById('showWeather').checked;
         
-        // Sample a subset for performance (show every Nth balloon)
-        const sampleRate = Math.max(1, Math.floor(data.length / 200));
+        // Filter by altitude
+        const filteredData = data.filter(([lat, lon, alt]) => alt >= this.minAltitude);
         
-        for (let i = 0; i < data.length; i += sampleRate) {
-            const [lat, lon, alt] = data[i];
+        // Sample a subset for performance (show every Nth balloon)
+        const sampleRate = Math.max(1, Math.floor(filteredData.length / 200));
+        
+        for (let i = 0; i < filteredData.length; i += sampleRate) {
+            const [lat, lon, alt] = filteredData[i];
             
             // Create marker
             const marker = L.circleMarker([lat, lon], {
@@ -393,6 +402,11 @@ class BalloonTracker {
         const slider = document.getElementById('timeSlider');
         const playPauseBtn = document.getElementById('playPause');
         const resetBtn = document.getElementById('resetBtn');
+        const animationSpeedSelect = document.getElementById('animationSpeed');
+        const altitudeFilter = document.getElementById('altitudeFilter');
+        const altitudeFilterValue = document.getElementById('altitudeFilterValue');
+        const exportBtn = document.getElementById('exportBtn');
+        const darkModeToggle = document.getElementById('darkMode');
         
         slider.addEventListener('input', (e) => {
             this.currentHour = parseInt(e.target.value);
@@ -406,8 +420,41 @@ class BalloonTracker {
         resetBtn.addEventListener('click', () => {
             this.currentHour = 0;
             slider.value = 0;
+            if (this.isPlaying) {
+                this.togglePlay();
+            }
             this.updateDisplay();
         });
+        
+        animationSpeedSelect.addEventListener('change', (e) => {
+            this.animationSpeed = parseInt(e.target.value);
+            if (this.isPlaying) {
+                // Restart animation with new speed
+                this.togglePlay();
+                this.togglePlay();
+            }
+        });
+        
+        altitudeFilter.addEventListener('input', (e) => {
+            this.minAltitude = parseFloat(e.target.value);
+            altitudeFilterValue.textContent = `≥ ${this.minAltitude.toFixed(1)} km`;
+            this.updateDisplay();
+        });
+        
+        exportBtn.addEventListener('click', () => {
+            this.exportData();
+        });
+        
+        darkModeToggle.addEventListener('change', () => {
+            this.toggleDarkMode();
+        });
+        
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            darkModeToggle.checked = true;
+            this.darkMode = true;
+            this.toggleDarkMode();
+        }
         
         document.getElementById('showTrajectories').addEventListener('change', () => {
             this.updateDisplay();
@@ -419,6 +466,47 @@ class BalloonTracker {
         
         document.getElementById('showHeatmap').addEventListener('change', () => {
             this.updateDisplay();
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger shortcuts when typing in inputs
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            switch(e.key) {
+                case ' ': // Spacebar - play/pause
+                    e.preventDefault();
+                    this.togglePlay();
+                    break;
+                case 'ArrowLeft': // Left arrow - previous hour
+                    e.preventDefault();
+                    if (this.currentHour > 0) {
+                        this.currentHour--;
+                        slider.value = this.currentHour;
+                        this.updateDisplay();
+                    }
+                    break;
+                case 'ArrowRight': // Right arrow - next hour
+                    e.preventDefault();
+                    if (this.currentHour < 23) {
+                        this.currentHour++;
+                        slider.value = this.currentHour;
+                        this.updateDisplay();
+                    }
+                    break;
+                case 'r':
+                case 'R': // R - reset
+                    e.preventDefault();
+                    resetBtn.click();
+                    break;
+                case 'e':
+                case 'E': // E - export
+                    e.preventDefault();
+                    this.exportData();
+                    break;
+            }
         });
     }
     
@@ -434,7 +522,7 @@ class BalloonTracker {
                 this.currentHour = (this.currentHour + 1) % 24;
                 document.getElementById('timeSlider').value = this.currentHour;
                 this.updateDisplay();
-            }, 500); // Update every 500ms
+            }, this.animationSpeed);
         } else {
             btn.textContent = '▶ Play';
             btn.classList.remove('paused');
@@ -444,6 +532,67 @@ class BalloonTracker {
                 this.playInterval = null;
             }
         }
+    }
+    
+    exportData() {
+        const hour = this.currentHour;
+        const data = this.balloonData[hour] || [];
+        const filteredData = data.filter(([lat, lon, alt]) => alt >= this.minAltitude);
+        
+        const exportData = {
+            timestamp: new Date().toISOString(),
+            hour: hour,
+            hoursAgo: 23 - hour,
+            totalBalloons: filteredData.length,
+            minAltitude: this.minAltitude,
+            balloons: filteredData.map(([lat, lon, alt], idx) => ({
+                id: idx + 1,
+                latitude: lat,
+                longitude: lon,
+                altitude: alt
+            }))
+        };
+        
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `windborne-balloons-hour-${hour}-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    toggleDarkMode() {
+        this.darkMode = !this.darkMode;
+        document.body.classList.toggle('dark-mode', this.darkMode);
+        
+        // Update map tiles for dark mode
+        if (this.darkMode) {
+            this.map.eachLayer((layer) => {
+                if (layer instanceof L.TileLayer) {
+                    this.map.removeLayer(layer);
+                }
+            });
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap contributors © CARTO',
+                maxZoom: 18
+            }).addTo(this.map);
+        } else {
+            this.map.eachLayer((layer) => {
+                if (layer instanceof L.TileLayer) {
+                    this.map.removeLayer(layer);
+                }
+            });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18
+            }).addTo(this.map);
+        }
+        
+        // Save preference
+        localStorage.setItem('darkMode', this.darkMode);
     }
 }
 

@@ -152,6 +152,128 @@ header h1 {
     cursor: pointer;
 }
 
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.speed-control select {
+    padding: 4px 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    border-top: 1px solid #e9ecef;
+    margin-top: 10px;
+}
+
+.filter-controls label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.filter-controls input[type="range"] {
+    width: 150px;
+}
+
+.export-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    background: #667eea;
+    color: white;
+}
+
+.export-btn:hover {
+    background: #5568d3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Dark mode styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+body.dark-mode .container {
+    background: #2d3748;
+    color: #e2e8f0;
+}
+
+body.dark-mode header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+body.dark-mode .controls {
+    background: #374151;
+    border-bottom-color: #4b5563;
+}
+
+body.dark-mode .stats {
+    background: #374151;
+    border-bottom-color: #4b5563;
+}
+
+body.dark-mode .stat-label {
+    color: #9ca3af;
+}
+
+body.dark-mode .stat-value {
+    color: #60a5fa;
+}
+
+body.dark-mode .info-panel {
+    background: #2d3748;
+    color: #e2e8f0;
+}
+
+body.dark-mode .info-panel h3,
+body.dark-mode .info-panel h4 {
+    color: #f3f4f6;
+}
+
+body.dark-mode .info-panel p {
+    color: #d1d5db;
+}
+
+body.dark-mode .features {
+    background: #374151;
+}
+
+body.dark-mode .features li {
+    color: #d1d5db;
+}
+
+body.dark-mode .time-control label,
+body.dark-mode .view-controls label,
+body.dark-mode .filter-controls label {
+    color: #e2e8f0;
+}
+
+body.dark-mode .speed-control select {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e2e8f0;
+}
+
 .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -238,6 +360,28 @@ header h1 {
     left: 0;
     color: #667eea;
     font-weight: bold;
+}
+
+.keyboard-shortcuts kbd {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    margin: 0 2px;
+}
+
+body.dark-mode .keyboard-shortcuts {
+    background: #374151;
+}
+
+body.dark-mode .keyboard-shortcuts kbd {
+    background: #4b5563;
+    border-color: #6b7280;
+    color: #e2e8f0;
 }
 
 /* Loading spinner */

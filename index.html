@@ -18,8 +18,17 @@
             <div class="time-control">
                 <label for="timeSlider">Time: <span id="timeDisplay" aria-live="polite">Current (00:00)</span></label>
                 <input type="range" id="timeSlider" min="0" max="23" value="0" step="1" aria-label="Time slider to view balloon positions from current to 23 hours ago">
-                <button id="playPause" class="play-btn" aria-label="Play or pause animation">▶ Play</button>
+                <button id="playPause" class="play-btn" aria-label="Play or pause animation (Space)">▶ Play</button>
                 <button id="resetBtn" class="reset-btn" aria-label="Reset to current time">Reset</button>
+                <label class="speed-control">
+                    <span>Speed:</span>
+                    <select id="animationSpeed" aria-label="Animation speed">
+                        <option value="2000">0.5x</option>
+                        <option value="1000" selected>1x</option>
+                        <option value="500">2x</option>
+                        <option value="250">4x</option>
+                    </select>
+                </label>
             </div>
             <div class="view-controls">
                 <label>
@@ -34,6 +43,18 @@
                     <input type="checkbox" id="showHeatmap">
                     Show Density Heatmap
                 </label>
+                <label>
+                    <input type="checkbox" id="darkMode">
+                    Dark Mode
+                </label>
+            </div>
+            <div class="filter-controls">
+                <label>
+                    <span>Filter by Altitude:</span>
+                    <input type="range" id="altitudeFilter" min="0" max="30" value="0" step="0.5">
+                    <span id="altitudeFilterValue">≥ 0 km</span>
+                </label>
+                <button id="exportBtn" class="export-btn" aria-label="Export balloon data">📥 Export Data</button>
             </div>
         </div>
 
@@ -79,7 +100,21 @@
                     <li>📈 Trajectory visualization showing 24-hour movement</li>
                     <li>🗺️ Interactive time slider to explore historical positions</li>
                     <li>🔥 Density heatmap showing balloon concentration</li>
+                    <li>🎚️ Altitude filtering to focus on specific height ranges</li>
+                    <li>⚡ Adjustable animation speed (0.5x to 4x)</li>
+                    <li>🌙 Dark mode for comfortable viewing</li>
+                    <li>📥 Export balloon data as JSON</li>
+                    <li>⌨️ Keyboard shortcuts (Space: play/pause, Arrows: navigate, E: export, R: reset)</li>
                     <li>📱 Responsive design for all devices</li>
+                </ul>
+            </div>
+            <div class="keyboard-shortcuts" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h4>Keyboard Shortcuts:</h4>
+                <ul style="list-style: none; padding: 0; margin: 10px 0;">
+                    <li><kbd>Space</kbd> - Play/Pause animation</li>
+                    <li><kbd>←</kbd> <kbd>→</kbd> - Navigate hours</li>
+                    <li><kbd>R</kbd> - Reset to current time</li>
+                    <li><kbd>E</kbd> - Export data</li>
                 </ul>
             </div>
             <div class="repo-link" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
